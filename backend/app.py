@@ -43,6 +43,7 @@ create_users_table()
 def index():
     return render_template('index.html')
 
+
 # Маршрут для сохранения данных в базе данных
 @app.route('/save_data', methods=['POST'])
 def save_data():
@@ -50,10 +51,27 @@ def save_data():
     surname = request.form['surname']
     email = request.form['email']
     login = request.form['login']
+
+    # Проверка на уникальность логина
     try:
         connection = connect_to_db()
         cursor = connection.cursor()
-        cursor.execute('INSERT INTO users (name, surname, email, login) VALUES (%s, %s, %s, %s)', (name, surname, email, login))
+        cursor.execute('SELECT login FROM users WHERE login = %s', (login,))
+        existing_login = cursor.fetchone()
+        if existing_login:
+            return '<script>alert("Login already exists!"); window.location.replace("/")</script>'
+    except psycopg2.Error as e:
+        return f'Error checking login: {e}'
+    finally:
+        if connection:
+            cursor.close()
+            connection.close()
+
+    try:
+        connection = connect_to_db()
+        cursor = connection.cursor()
+        cursor.execute('INSERT INTO users (name, surname, email, login) VALUES (%s, %s, %s, %s)',
+                       (name, surname, email, login))
         connection.commit()
         return '<script>alert("Data saved successfully!"); window.location.replace("/")</script>'
     except psycopg2.Error as e:

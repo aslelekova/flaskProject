@@ -15,6 +15,8 @@ services:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
       - POSTGRES_DB=flask_app
+    networks:
+      - flask_network
 
   database:
     image: "postgres:latest"
@@ -26,3 +28,8 @@ services:
       - POSTGRES_DB=flask_app
     volumes:
       - "./data/postgres:/var/lib/postgresql/data"
+    networks:
+      - flask_network
+networks:
+  flask_network:
+    driver: bridge
