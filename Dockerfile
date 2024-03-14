@@ -11,11 +11,10 @@ RUN pip install -r requirements.txt
 # Копируем все файлы из текущего каталога внутрь контейнера
 COPY . .
 
-
 # Устанавливаем переменные окружения для настройки PostgreSQL
 ENV POSTGRES_USER postgres
 ENV POSTGRES_PASSWORD postgres
-ENV POSTGRES_DB flask_app
+ENV POSTGRES_DB database
 
 # Команда, которая будет запущена при старте контейнера
 CMD ["python", "backend/app.py"]
