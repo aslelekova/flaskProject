@@ -9,6 +9,7 @@ services:
       - "./data:/app/data"
     depends_on:
       - database
+      - redis
     environment:
       - POSTGRES_HOST=database
       - POSTGRES_PORT=5432
@@ -30,6 +31,14 @@ services:
       - "./data/postgres:/var/lib/postgresql/data"
     networks:
       - flask_network
+
+  redis:
+    image: "redis:latest"
+    ports:
+      - "6379:6379"
+    networks:
+      - flask_network
+
 networks:
   flask_network:
     driver: bridge

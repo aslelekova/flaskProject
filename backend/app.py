@@ -1,7 +1,14 @@
 from flask import Flask, request, render_template
 import psycopg2
+import redis
 
 app = Flask(__name__, template_folder='../templates')
+
+# Подключение к Redis
+redis_host = 'redis'
+redis_port = 6379
+redis_db = 0
+redis_conn = redis.StrictRedis(host=redis_host, port=redis_port, db=redis_db)
 
 # Функция для подключения к базе данных PostgreSQL
 def connect_to_db():
@@ -43,7 +50,6 @@ create_users_table()
 def index():
     return render_template('index.html')
 
-
 # Маршрут для сохранения данных в базе данных
 @app.route('/save_data', methods=['POST'])
 def save_data():
@@ -73,6 +79,10 @@ def save_data():
         cursor.execute('INSERT INTO users (name, surname, email, login) VALUES (%s, %s, %s, %s)',
                        (name, surname, email, login))
         connection.commit()
+
+        # Кэширование данных в Redis
+        redis_conn.set(login, f'{name} {surname}')
+
         return '<script>alert("Data saved successfully!"); window.location.replace("/")</script>'
     except psycopg2.Error as e:
         return f'Error saving data: {e}'

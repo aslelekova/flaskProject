@@ -19,3 +19,5 @@ ENV POSTGRES_DB database
 
 # Команда, которая будет запущена при старте контейнера
 CMD ["python", "backend/app.py"]
+
+
